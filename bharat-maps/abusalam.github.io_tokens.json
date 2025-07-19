@@ -1,0 +1,10 @@
+{
+    "State_Boundary" : {
+        "URL" : "https://mapservice.gov.in/gismapservice/rest/services/BharatMapService/State_Boundary/MapServer", 
+        "Token" : "gYmrUuX8XvSJEpEnC4igTC5bFY1WeDJGMq2LG3_drab5BY_QBD0wma0k0cAxXQ77NWO00jQBtqzIygWpui8v5Q.."
+    },
+    "District_Boundary" : {
+        "URL" : "https://mapservice.gov.in/gismapservice/rest/services/BharatMapService/District_Boundary/MapServer", 
+        "Token" : "-C477vNtR3X5iAfgw6EheHYEjQjw_z5NvT9XJo63sCt8WRXEA9WQf14_7VgUY_rKGH8Iu5HxSSu-3BoytzNB1g.."
+    }
+}

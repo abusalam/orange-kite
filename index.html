@@ -20,28 +20,34 @@
         var map;
         var boundary_layer;
         var district_boundary;
-        require(["esri/map","esri/layers/ArcGISDynamicMapServiceLayer","dojo/domReady!"], function (Map, ArcGISDynamicMapServiceLayer) {
-            map = new Map(
-                "map",
-                {
-                    logo:false,
-                    showAttribution:false,
-                    basemap: "streets-navigation-vector",
-                    center: [88.133222, 25.034102], // longitude, latitude         
-                    zoom: 9
+        fetch('bharat-maps/' + window.location.hostname + '_tokens.json')
+            .then((response) => response.json())
+            .then((json) => {
+                console.log(json);
+                district_boundary = json.District_Boundary;
+                require(["esri/map","esri/layers/ArcGISDynamicMapServiceLayer","dojo/domReady!"], function (Map, ArcGISDynamicMapServiceLayer) {
+                    map = new Map(
+                        "map",
+                        {
+                            logo:false,
+                            showAttribution:false,
+                            basemap: "streets-navigation-vector",
+                            center: [88.133222, 25.034102], // longitude, latitude         
+                            zoom: 9
+                        });
+        
+                    boundary_layer = new ArcGISDynamicMapServiceLayer(
+                        district_boundary.URL + "?token=" + district_boundary.Token + "", 
+                        { id: "India"}
+                    );
+                    // map.addLayers([boundary_layer]);
                 });
+            })
+            .catch((error) => {
+                console.error('Error fetching tokens:', error);
+                alert('Failed to load tokens. Please add "bharat-maps/<hostname>_tokens.json" file with valid tokens.');
+            });
 
-            district_boundary = {
-                url: 'https://mapservice.gov.in/gismapservice/rest/services/BharatMapService/District_Boundary/MapServer', 
-                token: "nsLc1KRPwxTF0KJFXOPVA0Fv0DeRo__iRHhPFbWOSELA9gRDMsXUzardFauwHqJKauUcDQqZTfUflPvplEd8wA.."
-            };
-
-            boundary_layer = new ArcGISDynamicMapServiceLayer(
-                district_boundary.url + "?token=" + district_boundary.token + "", 
-                { id: "India"}
-            );
-            // map.addLayers([boundary_layer]);
-        });
     </script>
 </head>
 
