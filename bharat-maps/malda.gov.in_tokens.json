@@ -6,5 +6,9 @@
     "District_Boundary" : {
         "URL" : "https://mapservice.gov.in/gismapservice/rest/services/BharatMapService/District_Boundary/MapServer", 
         "Token" : "nsLc1KRPwxTF0KJFXOPVA0Fv0DeRo__iRHhPFbWOSELA9gRDMsXUzardFauwHqJKauUcDQqZTfUflPvplEd8wA.."
+    },
+    "Block_Boundary" : {
+        "URL" : "https://mapservice.gov.in/gismapservice/rest/services/BharatMapService/Block_Boundary/MapServer", 
+        "Token" : "1ANBXIuEyzhl9uu9bL-L2Q9nYbOnKhrQvBXNZm4xXzmSJPxCWwaaxJspJYLK5fRLB5RYrDePCHhrkKnB7JYnJQ.."
     }
 }

@@ -6,53 +6,102 @@
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, userscalable=no">
     <title>Bharat Maps</title>
     <link rel="stylesheet" href="https://js.arcgis.com/3.41/esri/css/esri.css">
+    <link rel="stylesheet" href="https://js.arcgis.com/3.41/dijit/themes/claro/claro.css">
     <style>
         html,
-        body,
-        #map {
+        body {
             height: 100%;
             padding: 0;
             margin: 0;
+        }
+        li {
+            padding-bottom: 5px;
+            padding-top: 5px;
+        }
+
+        #leftPane {
+            width: 20%;
+        }
+
+        #legendPane {
+            border: solid #97DCF2 1px;
         }
     </style>
     <script src="https://js.arcgis.com/3.41/"></script>
     <script>
         var map;
         var boundary_layer;
-        var district_boundary;
+        var boundary_service;
         fetch('bharat-maps/' + window.location.hostname + '_tokens.json')
             .then((response) => response.json())
             .then((json) => {
                 console.log(json);
-                district_boundary = json.District_Boundary;
-                require(["esri/map","esri/layers/ArcGISDynamicMapServiceLayer","dojo/domReady!"], function (Map, ArcGISDynamicMapServiceLayer) {
+                boundary_service = json.Block_Boundary;
+                require(["esri/map", "esri/layers/ArcGISDynamicMapServiceLayer", "esri/InfoTemplate", "dojo/parser", "dojo/domReady!"], function (Map, ArcGISDynamicMapServiceLayer, InfoTemplate, parser) {
+                    parser.parse();
                     map = new Map(
                         "map",
                         {
-                            logo:false,
-                            showAttribution:false,
+                            logo: false,
+                            showAttribution: false,
                             basemap: "streets-navigation-vector",
                             center: [88.133222, 25.034102], // longitude, latitude         
                             zoom: 9
                         });
-        
+
                     boundary_layer = new ArcGISDynamicMapServiceLayer(
-                        district_boundary.URL + "?token=" + district_boundary.Token + "", 
-                        { id: "India"}
+                        boundary_service.URL + "?token=" + boundary_service.Token + "",
+                        { id: "India" }
                     );
-                    // map.addLayers([boundary_layer]);
+                    var state_info = new InfoTemplate();
+                    state_info.setTitle("<b>${block_name} Block</b>");
+                    boundary_layer.setInfoTemplates({ 0: { infoTemplate: state_info } });
+                    map.addLayers([boundary_layer]);
                 });
             })
             .catch((error) => {
                 console.error('Error fetching tokens:', error);
                 alert('Failed to load tokens. Please add "bharat-maps/<hostname>_tokens.json" file with valid tokens.');
             });
-
     </script>
 </head>
 
-<body>
-    <div id="map"></div>
+<body class="claro">
+    <div id="content" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="design:'headline', gutters:true"
+        style="width: 100%; height: 100%; margin: 0;">
+        <div id="leftPane" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'left'">
+            <div data-dojo-type="dijit/layout/AccordionContainer">
+                <div data-dojo-type="dijit/layout/ContentPane" id="legendPane" data-dojo-props="title:'Bharat Maps'">
+
+                    <ol>
+                        <li><a href="BharatMaps.html" target="_blank">View District Boundaries</a></li>
+                        <li><a href="blocks.html" target="_blank">View Block Boundaries</a></li>
+                    </ol>
+
+                </div>
+                <div data-dojo-type="dijit/layout/ContentPane" id="TOCPane"
+                    data-dojo-props="title:'Contents', selected:true">
+                    <div id="TOCDiv"></div>
+                </div>
+                <div data-dojo-type="dijit/layout/ContentPane" id="aboutPane" data-dojo-props="title:'About'">
+                    <div id="aboutDiv">
+                        <p>This application displays block boundaries in India using the Bharat Maps service.</p>
+                        <p>Click on a block to see its details.</p>
+                        <p>Use the TOC to toggle visibility of layers.</p>
+                        <p>Zoom in/out using the map controls.</p>
+                        <p>Use the search bar to find specific blocks.</p>
+                        <p>For more information, visit the <a href="https://bharatmaps.gov.in" target="_blank">Bharat
+                                Maps website</a>.</p>
+                        <p>Developed by Bharat Maps Team.</p>
+                        <p>For feedback, contact us at rsgis[at]nic[dot]in</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="map" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'"
+            style="overflow:hidden;">
+        </div>
+    </div>
 </body>
 
 </html>

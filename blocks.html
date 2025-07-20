@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, userscalable=no">
+    <title>Bharat Maps</title>
+    <link rel="stylesheet" href="https://js.arcgis.com/3.41/esri/css/esri.css">
+    <style>
+        html,
+        body,
+        #map {
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+    <script src="https://js.arcgis.com/3.41/"></script>
+    <script>
+        var map;
+        var boundary_layer;
+        var boundary_service;
+        fetch('bharat-maps/' + window.location.hostname + '_tokens.json')
+            .then((response) => response.json())
+            .then((json) => {
+                console.log(json);
+                boundary_service = json.Block_Boundary;
+                require(["esri/map", "esri/layers/ArcGISDynamicMapServiceLayer", "esri/InfoTemplate", "dojo/domReady!"], function (Map, ArcGISDynamicMapServiceLayer, InfoTemplate) {
+                    map = new Map(
+                        "map",
+                        {
+                            logo: false,
+                            showAttribution: false,
+                            basemap: "streets-navigation-vector",
+                            center: [88.133222, 25.034102], // longitude, latitude         
+                            zoom: 9
+                        });
+
+                    boundary_layer = new ArcGISDynamicMapServiceLayer(
+                        boundary_service.URL + "?token=" + boundary_service.Token + "",
+                        { id: "India" }
+                    );
+                    var state_info = new InfoTemplate();
+                    state_info.setTitle("<b>${block_name} Block</b>");
+                    boundary_layer.setInfoTemplates({ 0: { infoTemplate: state_info } });
+                    map.addLayers([boundary_layer]);
+                });
+            })
+            .catch((error) => {
+                console.error('Error fetching tokens:', error);
+                alert('Failed to load tokens. Please add "bharat-maps/<hostname>_tokens.json" file with valid tokens.');
+            });
+    </script>
+</head>
+
+<body>
+    <div id="map"></div>
+</body>
+
+</html>
