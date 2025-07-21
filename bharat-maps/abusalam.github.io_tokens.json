@@ -1,14 +1,19 @@
 {
+    "Map_ServiceURL" :  "https://mapservice.gov.in/mapserviceserv176/rest/services/swaas/swaasdist/MapServer",
     "State_Boundary" : {
         "URL" : "https://mapservice.gov.in/gismapservice/rest/services/BharatMapService/State_Boundary/MapServer", 
         "Token" : "gYmrUuX8XvSJEpEnC4igTC5bFY1WeDJGMq2LG3_drab5BY_QBD0wma0k0cAxXQ77NWO00jQBtqzIygWpui8v5Q.."
     },
     "District_Boundary" : {
         "URL" : "https://mapservice.gov.in/gismapservice/rest/services/BharatMapService/District_Boundary/MapServer", 
-        "Token" : "-C477vNtR3X5iAfgw6EheHYEjQjw_z5NvT9XJo63sCt8WRXEA9WQf14_7VgUY_rKGH8Iu5HxSSu-3BoytzNB1g.."
+        "Token" : "-C477vNtR3X5iAfgw6EheAEXb7E6eQq64D0sQ1Ca3y_AjB_kgOAH0MEUhVs8ptWvhwueszxZH-wHXGz4j5vYig.."
     },
     "Block_Boundary" : {
         "URL" : "https://mapservice.gov.in/gismapservice/rest/services/BharatMapService/Block_Boundary/MapServer",
         "Token" : "-kapvUGtZwT02rsWlRn4RH9pecRUhtzEigbGhiQYgqdA7rRmkVf0KOth8zTcjGBAyhJpW_chR0ePqvxjTVgTFA.."
+    },
+    "AC_PC" : {
+        "URL" : "https://mapservice.gov.in/gismapservice/rest/services/BharatMapService/AC_PC/MapServer", 
+        "Token" : "ws4mnKyHMp0AvhKP_GuEKg0wLwBxHvPs3tO25HE4HIDrbhZZMeP1NxqeBYb0s9RmnK7PoJwvPtBgUILwgjYR2A.."
     }
 }

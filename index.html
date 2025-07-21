@@ -14,6 +14,7 @@
             padding: 0;
             margin: 0;
         }
+
         li {
             padding-bottom: 5px;
             padding-top: 5px;
@@ -26,23 +27,89 @@
         #legendPane {
             border: solid #97DCF2 1px;
         }
+
+        .watermark-nic {
+            width: 160px;
+            position: fixed;
+            z-index: 99;
+            bottom: 18px;
+            right: 0;
+            left: 0;
+            margin: 0 auto;
+            opacity: 1;
+        }
+
+        .header {
+            position: absolute;
+            z-index: 9;
+            background: white;
+            padding: 1rem;
+            left: 27px;
+            top: 27px;
+            box-shadow: 0 1px 3px rgba(60, 64, 67, 0.3), 0 4px 8px 3px rgba(60, 64, 67, 0.15);
+            width: 300px;
+            border-radius: 1rem;
+            transition: 0.45s;
+            opacity: 0;
+        }
     </style>
     <script src="https://js.arcgis.com/3.41/"></script>
     <script>
+        function hotkeyControl(event) {
+            // this would test for whichever key is 40 (down arrow) and the ctrl key at the same time
+            if (event.ctrlKey && event.code === 'ArrowDown') {
+                document.getElementById('mapControl').style.opacity = 1;
+            }
+        }
+        document.addEventListener('keyup', hotkeyControl, false);
+
         var map;
         var boundary_layer;
+        var district_boundary_layer;
         var boundary_service;
+        var district_boundary_layer_service;
         fetch('bharat-maps/' + window.location.hostname + '_tokens.json')
             .then((response) => response.json())
             .then((json) => {
-                console.log(json);
+                // console.log(json);
                 boundary_service = json.Block_Boundary;
-                require(["esri/map", "esri/layers/ArcGISDynamicMapServiceLayer", "esri/InfoTemplate", "dojo/parser", "dojo/domReady!"], function (Map, ArcGISDynamicMapServiceLayer, InfoTemplate, parser) {
+                district_boundary_layer_service = json.District_Boundary;
+                bharat_map_service = json.Map_ServiceURL;
+                require([
+                    "esri/map",
+                    "esri/layers/ArcGISDynamicMapServiceLayer",
+                    "esri/InfoTemplate",
+                    "esri/tasks/query",
+                    "esri/tasks/QueryTask",
+                    "esri/layers/GraphicsLayer",
+                    "esri/graphic",
+                    "esri/symbols/PictureMarkerSymbol",
+                    "esri/symbols/SimpleLineSymbol",
+                    "esri/symbols/SimpleFillSymbol",
+                    "esri/Color",
+                    "dojo/parser",
+                    "dojo/domReady!"
+                ], function (
+                    Map,
+                    ArcGISDynamicMapServiceLayer,
+                    InfoTemplate,
+                    Query,
+                    QueryTask,
+                    GraphicsLayer,
+                    Graphic,
+                    PictureMarkerSymbol,
+                    SimpleLineSymbol,
+                    SimpleFillSymbol,
+                    Color,
+                    parser
+                ) {
                     parser.parse();
-                    map = new Map(
-                        "map",
+                    map = new Map("map",
                         {
                             logo: false,
+                            title: "Bharat Maps",
+                            slider: true,
+                            sliderPosition: "top-right",
                             showAttribution: false,
                             basemap: "streets-navigation-vector",
                             center: [88.133222, 25.034102], // longitude, latitude         
@@ -53,10 +120,80 @@
                         boundary_service.URL + "?token=" + boundary_service.Token + "",
                         { id: "India" }
                     );
+
+                    district_boundary_layer = new ArcGISDynamicMapServiceLayer(
+                        district_boundary_layer_service.URL + "?token=" + district_boundary_layer_service.Token + "",
+                        { id: "India" }
+                    )
+                    boundary_layer.setLayerDefinitions(["district = 'Malda'"]);
+                    district_boundary_layer.setLayerDefinitions(["district = 'Malda'"]);
                     var state_info = new InfoTemplate();
                     state_info.setTitle("<b>${block_name} Block</b>");
                     boundary_layer.setInfoTemplates({ 0: { infoTemplate: state_info } });
-                    map.addLayers([boundary_layer]);
+                    map.addLayers([boundary_layer, district_boundary_layer]);
+                    var graphlayer = new GraphicsLayer();
+                    map.addLayer(graphlayer);
+                    showBoundary("332");
+                    showMarker("332");
+
+                    function showBoundary(dt_code) {
+                        var qt = new QueryTask(district_boundary_layer_service.URL + "/0?token=" + district_boundary_layer_service.Token + "");
+                        var q = new Query();
+                        q.returnGeometry = true;
+                        q.outFields = ["*"];
+                        // q.outSpatialReference = { wkid: 102100 };
+                        q.where = "DTCODE11='" + dt_code + "'";
+                        qt.execute(q, function (fset) {
+                            // graphlayer.clear();
+                            if (fset.features.length > 0) {
+                                var geo = fset.features[0].geometry;
+                                var symbol = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
+                                    new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID,
+                                        new Color([115, 178, 255]), 3),
+                                    new Color([115, 178, 255, 0.1]));
+                                var graphic = new Graphic(geo, symbol);
+                                graphlayer.add(graphic);
+                            }
+                            else {
+                                alert("There is no District HQ");
+                            }
+                        }, function (error) {
+                            console.log(error);
+                        });
+                    }
+
+                    function showMarker(dt_code) {
+                        var qt = new QueryTask(bharat_map_service + "/1?token=");
+                        var q = new Query();
+                        q.returnGeometry = true;
+                        q.outFields = ["*"];
+                        // q.outSpatialReference = { wkid: 102100 };
+                        q.where = "DTCODE11='" + dt_code + "'";
+                        qt.execute(q, function (fset) {
+                            // graphlayer.clear();
+                            if (fset.features.length > 0) {
+                                var geo = fset.features[0].geometry;
+                                var markersymbol = new PictureMarkerSymbol({
+                                    "url": "marker.png",
+                                    "height": "30",
+                                    "width": "30",
+                                    "yoffset": 15,
+                                    "xoffset": 0
+                                });
+                                graphlayer.add(new Graphic(geo, markersymbol, null, null));
+                                var font = new esri.symbol.Font("20px", esri.symbol.Font.STYLE_NORMAL, esri.symbol.Font.VARIANT_NORMAL, esri.symbol.Font.WEIGHT_BOLDER);
+                                var endpoint = new esri.symbol.TextSymbol(fset.features[0].attributes.DTNAME).setFont(font).setColor(new esri.Color([0, 120, 255])).setOffset(0, 45);
+                                var endpointText = new Graphic(geo, endpoint, null, null);
+                                graphlayer.add(endpointText);
+                                console.log(fset.features[0].attributes);
+                            }
+                            else {
+                                alert("There is no District HQ");
+                            }
+                        }, function (error) {
+                            console.log(error);
+                        });
+                    }
                 });
             })
             .catch((error) => {
@@ -66,42 +203,29 @@
     </script>
 </head>
 
-<body class="claro">
-    <div id="content" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="design:'headline', gutters:true"
-        style="width: 100%; height: 100%; margin: 0;">
-        <div id="leftPane" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'left'">
-            <div data-dojo-type="dijit/layout/AccordionContainer">
-                <div data-dojo-type="dijit/layout/ContentPane" id="legendPane" data-dojo-props="title:'Bharat Maps'">
-
-                    <ol>
-                        <li><a href="BharatMaps.html" target="_blank">View District Boundaries</a></li>
-                        <li><a href="blocks.html" target="_blank">View Block Boundaries</a></li>
-                    </ol>
-
-                </div>
-                <div data-dojo-type="dijit/layout/ContentPane" id="TOCPane"
-                    data-dojo-props="title:'Contents', selected:true">
-                    <div id="TOCDiv"></div>
-                </div>
-                <div data-dojo-type="dijit/layout/ContentPane" id="aboutPane" data-dojo-props="title:'About'">
-                    <div id="aboutDiv">
-                        <p>This application displays block boundaries in India using the Bharat Maps service.</p>
-                        <p>Click on a block to see its details.</p>
-                        <p>Use the TOC to toggle visibility of layers.</p>
-                        <p>Zoom in/out using the map controls.</p>
-                        <p>Use the search bar to find specific blocks.</p>
-                        <p>For more information, visit the <a href="https://bharatmaps.gov.in" target="_blank">Bharat
-                                Maps website</a>.</p>
-                        <p>Developed by Bharat Maps Team.</p>
-                        <p>For feedback, contact us at rsgis[at]nic[dot]in</p>
-                    </div>
-                </div>
+<body>
+    <div id="mapControl" class="header only">
+        <div class="inner">
+            <div class="d-flex flex-stack">
+                <ol>
+                    <li>
+                        <a href="https://bharatnetprogress.nic.in/Bharatmaps_s3wass/?dtcode=332" target="_blank">
+                            District Boundary
+                        </a>
+                    </li>
+                    <li>
+                        <a href="blocks.html" target="_blank">
+                            Block Boundaries
+                        </a>
+                    </li>
+                </ol>
             </div>
         </div>
-        <div id="map" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'"
-            style="overflow:hidden;">
-        </div>
     </div>
+    <div id="map" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'"
+        style="width: 100%; height: 100vh" style="overflow:hidden;">
+    </div>
+    <img src="watermarknic.png" class="watermark-nic" alt="">
 </body>
 
 </html>

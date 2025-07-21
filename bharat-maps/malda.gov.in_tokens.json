@@ -1,4 +1,5 @@
 {
+    "Map_ServiceURL" :  "https://mapservice.gov.in/mapserviceserv176/rest/services/swaas/swaasdist/MapServer",
     "State_Boundary" : {
         "URL" : "https://mapservice.gov.in/gismapservice/rest/services/BharatMapService/State_Boundary/MapServer", 
         "Token" : "6mR4y5KPI6EcQMGYJ-yM47WM1WU3Yhnhikis8Hd5V8HFkTLyfbPV10sxCgziUpT9z9lGcFUN3NTx0n8DUdYIwg.."
