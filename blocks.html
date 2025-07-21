@@ -56,6 +56,19 @@
                     state_info.setTitle("<b>${block_name} Block</b>");
                     boundary_layer.setInfoTemplates({ 0: { infoTemplate: state_info } });
                     map.addLayers([boundary_layer]);
+                    map.on("load", laodMap);
+                    function laodMap() {
+                        if (window.location.href.indexOf('?dtcode=') > 0) {
+                            var url_string = window.location.href;//"http://www.example.com/t.html?a=1&b=3&c=m2-m3-m4-m5";//
+                            var url = new URL(url_string);
+                            var dt_code = url.searchParams.get("dtcode");
+                            if (dt_code.length == 3) {
+                                boundary_layer.setLayerDefinitions(["dtcode11 = '" + dt_code + "'"]);
+                            }
+                        } else {
+                            boundary_layer.setLayerDefinitions(["dtcode11 = '332'"]);
+                        }
+                    }
                 });
             })
             .catch((error) => {
