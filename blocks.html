@@ -14,6 +14,16 @@
             padding: 0;
             margin: 0;
         }
+        .watermark-nic {
+            width: 160px;
+            position: fixed;
+            z-index: 99;
+            bottom: 18px;
+            right: 0;
+            left: 0;
+            margin: 0 auto;
+            opacity: 1;
+        }
     </style>
     <script src="https://js.arcgis.com/3.41/"></script>
     <script>
@@ -31,6 +41,8 @@
                         {
                             logo: false,
                             showAttribution: false,
+                            slider: true,
+                            sliderPosition: "top-right",
                             basemap: "streets-navigation-vector",
                             center: [88.133222, 25.034102], // longitude, latitude         
                             zoom: 9
@@ -55,6 +67,7 @@
 
 <body>
     <div id="map"></div>
+    <img src="watermarknic.png" class="watermark-nic" alt="">
 </body>
 
 </html>
