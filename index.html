@@ -64,6 +64,7 @@
         document.addEventListener('keyup', hotkeyControl, false);
 
         var map;
+        var lgd_district_code = "332"; // Malda District Code
         var boundary_layer;
         var district_boundary_layer;
         var boundary_service;
@@ -72,11 +73,14 @@
             .then((response) => response.json())
             .then((json) => {
                 // console.log(json);
-                boundary_service = json.Block_Boundary;
+
                 district_boundary_layer_service = json.District_Boundary;
+                boundary_service = json.Admin_Boundary_GramPanchayat;
                 bharat_map_service = json.Map_ServiceURL;
                 require([
                     "esri/map",
+                    "esri/geometry/Extent",
+                    "esri/SpatialReference",
                     "esri/layers/ArcGISDynamicMapServiceLayer",
                     "esri/InfoTemplate",
                     "esri/tasks/query",
@@ -91,6 +95,8 @@
                     "dojo/domReady!"
                 ], function (
                     Map,
+                    Extent,
+                    SpatialReference,
                     ArcGISDynamicMapServiceLayer,
                     InfoTemplate,
                     Query,
@@ -111,30 +117,33 @@
                             slider: true,
                             sliderPosition: "top-right",
                             showAttribution: false,
-                            basemap: "streets-navigation-vector",
+                            basemap: "topo-vector",
                             center: [88.133222, 25.034102], // longitude, latitude         
                             zoom: 9
                         });
+                    var ind_ext = new Extent(66.62, 5.23, 98.87, 38.59, new SpatialReference({ wkid: 4326 }));
+                    map.setExtent(ind_ext.expand(1.2));
 
                     boundary_layer = new ArcGISDynamicMapServiceLayer(
                         boundary_service.URL + "?token=" + boundary_service.Token + "",
                         { id: "India" }
                     );
-
-                    district_boundary_layer = new ArcGISDynamicMapServiceLayer(
-                        district_boundary_layer_service.URL + "?token=" + district_boundary_layer_service.Token + "",
-                        { id: "India" }
-                    )
-                    boundary_layer.setLayerDefinitions(["district = 'Malda'"]);
-                    district_boundary_layer.setLayerDefinitions(["district = 'Malda'"]);
-                    var state_info = new InfoTemplate();
-                    state_info.setTitle("<b>${block_name} Block</b>");
-                    boundary_layer.setInfoTemplates({ 0: { infoTemplate: state_info } });
-                    map.addLayers([boundary_layer, district_boundary_layer]);
+                    boundary_layer.setLayerDefinitions([
+                        "dtcode11='" + lgd_district_code + "'",
+                        "dtcode11='" + lgd_district_code + "'",
+                        "dtcode11='" + lgd_district_code + "'",
+                        "dtcode11='" + lgd_district_code + "'",
+                        "dtcode11='" + lgd_district_code + "'",
+                    ]);
+                    var layer_info = new InfoTemplate();
+                    layer_info.setTitle("<b>${block_name}</b>");
+                    boundary_layer.setInfoTemplates({ 2: { infoTemplate: layer_info } });
+                    map.addLayers([boundary_layer]);
                     var graphlayer = new GraphicsLayer();
                     map.addLayer(graphlayer);
-                    showBoundary("332");
-                    showMarker("332");
+
+                    showBoundary(lgd_district_code);
+                    showMarker(lgd_district_code);
 
                     function showBoundary(dt_code) {
                         var qt = new QueryTask(district_boundary_layer_service.URL + "/0?token=" + district_boundary_layer_service.Token + "");
@@ -153,6 +162,10 @@
                                     new Color([115, 178, 255, 0.1]));
                                 var graphic = new Graphic(geo, symbol);
                                 graphlayer.add(graphic);
+                                
+                                setTimeout(function () {
+                                    map.setExtent(fset.features[0].geometry.getExtent(), true);
+                                }, 2000);
                             }
                             else {
                                 alert("There is no District HQ");
@@ -185,7 +198,7 @@
                                 var endpoint = new esri.symbol.TextSymbol(fset.features[0].attributes.DTNAME).setFont(font).setColor(new esri.Color([0, 120, 255])).setOffset(0, 45);
                                 var endpointText = new Graphic(geo, endpoint, null, null);
                                 graphlayer.add(endpointText);
-                                console.log(fset.features[0].attributes);
+                                // console.log(fset.features[0].attributes);
                             }
                             else {
                                 alert("There is no District HQ");

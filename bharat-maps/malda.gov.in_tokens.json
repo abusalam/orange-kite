@@ -11,5 +11,21 @@
     "Block_Boundary" : {
         "URL" : "https://mapservice.gov.in/gismapservice/rest/services/BharatMapService/Block_Boundary/MapServer", 
         "Token" : "1ANBXIuEyzhl9uu9bL-L2Q9nYbOnKhrQvBXNZm4xXzmSJPxCWwaaxJspJYLK5fRLB5RYrDePCHhrkKnB7JYnJQ.."
+    },
+    "Admin_Boundary_District" : {
+        "URL" : "https://mapservice.gov.in/gismapservice/rest/services/BharatMapService/Admin_Boundary_District/MapServer",
+        "Token" : "HsPt7_Dn_dMR5poOSP5ASCJdEOdORuzy8ZJ7mkKPl7ZDPbkqco784XbQqjiSLxTbLtp_PlCkNN-1_B3EMWo4rw.."
+    },
+    "Admin_Boundary_GramPanchayat" : {
+        "URL" : "https://mapservice.gov.in/gismapservice/rest/services/BharatMapService/Admin_Boundary_GramPanchayat/MapServer",
+        "Token" : "KPBb2BdzlpaVLzl9GtBliZpQUihapkzRBNtJO6NndvUOXa6WvIEJiRaUdLEX2ejkps9fiPHkcvwWiP_4h0i97w.."
+    },
+    "Admin_Boundary_Village" : {
+        "URL" : "https://mapservice.gov.in/gismapservice/rest/services/BharatMapService/Admin_Boundary_Village/MapServer",
+        "Token" : "0UHMAV_oFhJOT4ZTmphZ95Yf99c6V-uEyOP0_gQfWvK4PUB83v0b7FCEzK9IiGYBj11BbWt7daYUycptphTkgw.."
+    },
+    "AC_PC" : {
+        "URL" : "https://mapservice.gov.in/gismapservice/rest/services/BharatMapService/AC_PC/MapServer",
+        "Token" : "Pgrx8cY7d0W0D60ZQtKX1vdIcgJIcBuhsdLDCqWzjSp93iALnWaiPBBOq4h_j6QU"
     }
 }
